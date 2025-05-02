@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Sentimen </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #7209b7;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            background: linear-gradient(120deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            background-attachment: fixed;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        
+        .card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header {
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            color: white;
+            font-weight: 600;
+            padding: 18px 22px;
+            border-bottom: none;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn {
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-success {
+            background-color: #2dc653;
+            border-color: #2dc653;
+        }
+        
+        .btn-success:hover {
+            background-color: #25a244;
+            border-color: #25a244;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-warning {
+            background-color: #ff9e00;
+            border-color: #ff9e00;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #f08700;
+            border-color: #f08700;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 18px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            background-color: #f9fafc;
+            font-size: 15px;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.25);
+            border-color: var(--primary-color);
+            background-color: #ffffff;
+        }
+        
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+            padding: 16px 22px;
+            transition: background-color 0.3s ease;
+            border-color: #eaedf2;
+        }
+        
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .img-fluid {
+            transition: transform 0.3s ease;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .img-fluid:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--dark-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+        
+        .alert {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+            
+            .card {
+                margin-bottom: 20px;
+            }
+        }
+        
+        footer {
+            background: linear-gradient(135deg, #2b2d42 0%, #1a1b26 100%);
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <i class="fas fa-chart-pie me-2"></i>
+            Analisis Sentimen 
+        </a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Upload CSV Form -->
+        <div class="col-lg-8 col-md-10">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-file-upload me-2"></i>
+                    Upload File CSV
+                </div>
+                <div class="card-body p-4">
+                    <form action="/upload" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <input class="form-control" type="file" name="file" accept=".csv" required>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-upload me-2"></i>Upload & Proses
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Grafik Section -->
+        <div class="col-lg-10 col-md-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Visualisasi Data
+                </div>
+                <div class="card-body p-4 text-center">
+                    {% if grafik_paths %}
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <img src="/results/sentiment_distribution.png" class="img-fluid rounded" alt="Distribusi Sentimen">
+                                        <div class="mt-3 text-primary fw-bold">Distribusi Sentimen</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <img src="/results/comment_activity.png" class="img-fluid rounded" alt="Aktivitas Komentar">
+                                        <div class="mt-3 text-primary fw-bold">Aktivitas Komentar</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <img src="/results/wordcloud_negatif.png" class="img-fluid rounded" alt="Wordcloud Negatif">
+                                        <div class="mt-3 text-danger fw-bold">Wordcloud Negatif</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <img src="/results/wordcloud_netral.png" class="img-fluid rounded" alt="Wordcloud Netral">
+                                        <div class="mt-3 text-secondary fw-bold">Wordcloud Netral</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <img src="/results/wordcloud_positif.png" class="img-fluid rounded" alt="Wordcloud Positif">
+                                        <div class="mt-3 text-success fw-bold">Wordcloud Positif</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="py-5">
+                            <i class="fas fa-chart-line text-muted mb-3" style="font-size: 3rem;"></i>
+                            <p class="text-muted">Belum ada grafik, silakan upload file CSV terlebih dahulu.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Komentar Section -->
+        <div class="col-lg-8 col-md-10">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-comments me-2"></i>
+                    Komentar
+                </div>
+                <div class="card-body p-4">
+                    <form action="/add_comment" method="post" class="mb-4">
+                        <div class="input-group">
+                            <input type="text" name="comment" class="form-control" placeholder="Tulis komentar..." required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-paper-plane me-1"></i> Kirim
+                            </button>
+                        </div>
+                    </form>
+                    <div class="comment-list">
+                        <ul class="list-group">
+                            {% for c in comments %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="fas fa-comment-dots me-3 text-primary"></i>
+                                <span>{{ c }}</span>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item text-center py-4">
+                                <i class="far fa-comment-dots text-muted mb-2" style="font-size: 2rem;"></i>
+                                <p class="text-muted mb-0">Belum ada komentar.</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analisis LSTM Section -->
+        <div class="col-lg-8 col-md-10">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-brain me-2"></i>
+                    Analisis Sentimen dengan LSTM
+                </div>
+                <div class="card-body p-4">
+                    <form action="/analyze_lstm" method="post" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="analyze_text" class="form-control" placeholder="Masukkan komentar untuk analisis..." required>
+                            <button class="btn btn-warning" type="submit">
+                                <i class="fas fa-search me-1"></i> Analisis
+                            </button>
+                        </div>
+                    </form>
+                    {% if analysis_result %}
+                        <div class="alert alert-info mt-3 p-3 shadow-sm">
+                            <i class="fas fa-info-circle me-2"></i>
+                            {{ analysis_result|safe }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-white text-center py-4 mt-5">
+    <div class="container">
+        <p class="mb-0">© 2023 Analisis Sentimen </p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
